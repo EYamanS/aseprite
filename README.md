@@ -5,6 +5,13 @@
 [![Discourse Community](https://img.shields.io/badge/discourse-community-brightgreen.svg?style=flat)](https://community.aseprite.org/)
 [![Discord Server](https://discordapp.com/api/guilds/324979738533822464/embed.png)](https://discord.gg/Yb2CeX8)
 
+> **iPad port:** this fork contains an unofficial iPadOS port of
+> Aseprite with touch, Apple Pencil (pressure), keyboard and trackpad
+> support. See **[ios/README.md](ios/README.md)** to build it and
+> install it on your own iPad. This is not affiliated with Igara
+> Studio; please support the developers by
+> [buying Aseprite](https://www.aseprite.org/#buy).
+
 ## Introduction
 
 **Aseprite** is a program to create animated sprites. Its main features are:
