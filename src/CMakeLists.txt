@@ -97,7 +97,11 @@ add_subdirectory(app)
 # Output bin/data/ directory where we are going to copy data files
 
 set(ORIGINAL_DATA_OUTPUT_DIR ${CMAKE_BINARY_DIR}/bin/data)
-if(ENABLE_ASEPRITE_EXE AND APPLE)
+if(IOS)
+  # On iOS the data/ directory is copied inside the bundle after
+  # building the app (see the POST_BUILD command below).
+  set(DATA_OUTPUT_DIR ${ORIGINAL_DATA_OUTPUT_DIR})
+elseif(ENABLE_ASEPRITE_EXE AND APPLE)
   set(DATA_OUTPUT_DIR ${CMAKE_BINARY_DIR}/bin/Aseprite.app/Contents/Resources/data)
 else()
   set(DATA_OUTPUT_DIR ${ORIGINAL_DATA_OUTPUT_DIR})
@@ -204,7 +208,39 @@ if(ENABLE_ASEPRITE_EXE)
     endif()
   endif()
   set_target_properties(aseprite PROPERTIES LINK_FLAGS "${LAF_BACKEND_LINK_FLAGS}")
-  if(APPLE)
+  if(IOS)
+    set(ASEPRITE_IOS_BUNDLE_ID "org.aseprite.ios" CACHE STRING "Bundle identifier of the iOS app")
+    set(ASEPRITE_IOS_TEAM_ID "" CACHE STRING "Apple Developer Team ID used to sign the iOS app")
+    set(ASEPRITE_IOS_VERSION "1.3.18" CACHE STRING "Version of the iOS app bundle")
+
+    set(ios_icons
+      main/ios/AppIcon60x60@2x.png
+      main/ios/AppIcon76x76@2x~ipad.png
+      main/ios/AppIcon83.5x83.5@2x~ipad.png)
+    target_sources(aseprite PRIVATE ${ios_icons})
+    set_source_files_properties(${ios_icons} PROPERTIES MACOSX_PACKAGE_LOCATION "")
+
+    set_target_properties(aseprite PROPERTIES
+      OUTPUT_NAME "Aseprite"
+      MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_LIST_DIR}/main/ios/Info.plist"
+      MACOSX_BUNDLE_EXECUTABLE_NAME "Aseprite"
+      MACOSX_BUNDLE_GUI_IDENTIFIER "${ASEPRITE_IOS_BUNDLE_ID}"
+      MACOSX_BUNDLE_SHORT_VERSION_STRING "${ASEPRITE_IOS_VERSION}"
+      MACOSX_BUNDLE_BUNDLE_VERSION "${ASEPRITE_IOS_VERSION}"
+      XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "${ASEPRITE_IOS_BUNDLE_ID}"
+      XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY "2"
+      XCODE_ATTRIBUTE_CODE_SIGN_STYLE "Automatic"
+      XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "Apple Development"
+      XCODE_ATTRIBUTE_DEVELOPMENT_TEAM "${ASEPRITE_IOS_TEAM_ID}"
+      XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET "${CMAKE_OSX_DEPLOYMENT_TARGET}"
+      XCODE_ATTRIBUTE_ENABLE_BITCODE "NO"
+      XCODE_ATTRIBUTE_GENERATE_INFOPLIST_FILE "NO")
+
+    # Copy the data/ directory inside the bundle
+    add_custom_command(
+      TARGET aseprite POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_directory "${ORIGINAL_DATA_OUTPUT_DIR}" "$<TARGET_BUNDLE_DIR:aseprite>/data")
+  elseif(APPLE)
     set_target_properties(aseprite PROPERTIES
       MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_LIST_DIR}/main/osx/Info.plist")
 

@@ -49,6 +49,10 @@ std::string getFullOSString()
 
   os << "macOS " << p.osVer.major() << "." << p.osVer.minor() << "." << p.osVer.patch();
 
+#elif LAF_IOS
+
+  os << "iPadOS " << p.osVer.major() << "." << p.osVer.minor() << "." << p.osVer.patch();
+
 #else
 
   // ----------------------------------------------------------------------

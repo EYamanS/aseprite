@@ -145,6 +145,7 @@ set(ENABLE_LIBXML2 OFF CACHE BOOL "Enable the use of the system libxml2 library 
 set(ENABLE_CAT OFF CACHE BOOL "Enable cat building")
 set(ENABLE_TAR OFF CACHE BOOL "Enable tar building")
 set(ENABLE_CPIO OFF CACHE BOOL "Enable cpio building")
+set(ENABLE_UNZIP OFF CACHE BOOL "Enable unzip building")
 set(ENABLE_LIBB2 OFF CACHE BOOL "Enable the use of the system LIBB2 library if found")
 set(ENABLE_ICONV OFF CACHE BOOL "Enable iconv support")
 set(WINDOWS_VERSION "WS08" CACHE STRING "Set Windows Vista as the target version for compiling libarchive (Windows only)" FORCE)
@@ -218,7 +219,9 @@ if(ENABLE_SCRIPTING)
   set_source_files_properties(${all_lua_source_files} PROPERTIES LANGUAGE CXX)
 
   target_compile_definitions(lua PUBLIC LUA_FLOORN2I=F2Ifloor)
-  target_compile_definitions(lualib PRIVATE HAVE_SYSTEM)
+  if(NOT IOS) # system() is not available on iOS
+    target_compile_definitions(lualib PRIVATE HAVE_SYSTEM)
+  endif()
   target_include_directories(lua PUBLIC lua)
   target_include_directories(lauxlib PUBLIC lua)
   target_include_directories(lualib PUBLIC lua)

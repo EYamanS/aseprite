@@ -1,0 +1,30 @@
+diff --git a/src/ports/SkOSFile_ios.h b/src/ports/SkOSFile_ios.h
+index 67e7e7b..f96e272 100644
+--- a/src/ports/SkOSFile_ios.h
++++ b/src/ports/SkOSFile_ios.h
+@@ -16,6 +16,11 @@
+ #include "include/ports/SkCFObject.h"
+ 
+ static bool ios_get_path_in_bundle(const char path[], SkString* result) {
++    // Absolute paths or empty paths cannot be inside the bundle
++    if (!path || path[0] == 0 || path[0] == '/') {
++        return false;
++    }
++
+     // Get a reference to the main bundle
+     CFBundleRef mainBundle = CFBundleGetMainBundle();
+ 
+@@ -25,7 +30,13 @@ static bool ios_get_path_in_bundle(const char path[], SkString* result) {
+                                                                      (const UInt8*)path,
+                                                                      strlen(path),
+                                                                      /*isDirectory=*/false));
++    if (!pathURL) {
++        return false;
++    }
+     sk_cfp<CFStringRef> pathRef(CFURLCopyFileSystemPath(pathURL.get(), kCFURLPOSIXPathStyle));
++    if (!pathRef) {
++        return false;
++    }
+     // We use "data" as our subdirectory to match {{bundle_resources_dir}}/data in GN
+     // Unfortunately "resources" is not a valid top-level name in iOS, so we push it one level down
+     sk_cfp<CFURLRef> fileURL(CFBundleCopyResourceURL(mainBundle, pathRef.get(),

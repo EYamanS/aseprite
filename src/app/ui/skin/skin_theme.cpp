@@ -245,7 +245,7 @@ static FontData* load_font(const XMLElement* xmlFont, const std::string& xmlFile
     const char* platformFileAttrName =
 #if LAF_WINDOWS
       "file_win"
-#elif LAF_MACOS
+#elif LAF_MACOS || LAF_IOS
       "file_mac"
 #else
       "file_linux"
@@ -290,7 +290,7 @@ static FontData* load_font(const XMLElement* xmlFont, const std::string& xmlFile
     const char* platformName =
 #if LAF_WINDOWS
       "windows"
-#elif LAF_MACOS
+#elif LAF_MACOS || LAF_IOS
       "macos"
 #else
       "linux"
