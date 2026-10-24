@@ -21,8 +21,8 @@ trackpad support.
 ## Build
 
 ```sh
-git clone --recursive -b ios https://github.com/EYamanS/aseprite.git
-cd aseprite
+git clone --recursive https://github.com/EYamanS/aseprite-ipad.git
+cd aseprite-ipad
 
 # 1. Compile Skia for iOS and the host code generator (~5 minutes)
 ios/build.sh deps
