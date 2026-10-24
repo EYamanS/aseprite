@@ -67,6 +67,9 @@
 #include "os/sampling.h"
 #include "os/surface.h"
 #include "os/system.h"
+#if LAF_IOS
+  #include "os/ios/system.h"
+#endif
 #include "render/rasterize.h"
 #include "ui/ui.h"
 #include "view/layers.h"
@@ -3057,6 +3060,16 @@ void Editor::notifyZoomChanged()
 bool Editor::checkForScroll(ui::MouseMessage* msg)
 {
   tools::Ink* clickedInk = getCurrentEditorInk();
+
+#if LAF_IOS
+  // Fingers never draw on iPad (unless the user enables it from the
+  // toolbar), one finger scrolls the canvas and the Apple Pencil
+  // draws.
+  if (msg->pointerType() == ui::PointerType::Touch && !os::ios_is_finger_drawing_enabled()) {
+    startScrollingState(msg);
+    return true;
+  }
+#endif
 
   // Start scroll loop
   if (msg->middle() || clickedInk->isScrollMovement()) { // TODO msg->middle() should be

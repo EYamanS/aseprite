@@ -79,6 +79,8 @@
 
 #if LAF_MACOS
   #include "os/osx/system.h"
+#elif LAF_IOS
+  #include "app/ios_integration.h"
 #elif LAF_LINUX
   #include "os/x11/system.h"
 #endif
@@ -429,6 +431,11 @@ int App::initialize(const AppOptions& options)
     CliProcessor cli(delegate.get(), options);
     code = cli.process(context());
   }
+
+#if LAF_IOS
+  if (isGui())
+    init_ios_integration();
+#endif
 
   LOG("APP: Finish launching...\n");
   system->finishLaunching();

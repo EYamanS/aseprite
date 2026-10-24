@@ -124,6 +124,13 @@ static bool create_main_window(bool gpuAccel, bool& maximized, std::string& last
   // Scale is equal to 0 when it's the first time the program is
   // executed.
   int scale = Preferences::instance().general.screenScale();
+#if LAF_IOS
+  // On iPad we use a bigger scale by default (Retina display + touch)
+  if (scale == 0) {
+    scale = 3;
+    Preferences::instance().general.screenScale(scale);
+  }
+#endif
 
   const os::SystemRef system = os::System::instance();
   try {

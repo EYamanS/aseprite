@@ -89,7 +89,11 @@ list(APPEND generated_files ${output_fn})
 
 # A custom target to generate all files (mainly for .xml.h files that
 # might be required for other tools like clang-tidy)
-add_custom_target(generate_files DEPENDS ${generated_files})
+# (The Xcode "new build system" doesn't allow the same custom command in
+# two independent targets, so this target isn't available on Xcode.)
+if(NOT CMAKE_GENERATOR STREQUAL "Xcode")
+  add_custom_target(generate_files DEPENDS ${generated_files})
+endif()
 
 # libarchive definitions
 add_definitions(-DLIBARCHIVE_STATIC)
@@ -105,6 +109,9 @@ if(WIN32)
   target_sources(app-lib PRIVATE fonts/font_path_win.cpp)
 elseif(APPLE)
   target_sources(app-lib PRIVATE fonts/font_path_osx.mm)
+  if(IOS)
+    target_sources(app-lib PRIVATE ios_integration.cpp)
+  endif()
 else()
   target_sources(app-lib PRIVATE fonts/font_path_unix.cpp)
 endif()
