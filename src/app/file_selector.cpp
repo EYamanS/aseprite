@@ -35,7 +35,14 @@ bool show_file_selector(const std::string& title,
   const os::SystemRef system = os::System::instance();
   const std::string defExtension = Preferences::instance().saveFile.defaultExtension();
 
-  if (Preferences::instance().experimental.useNativeFileDialog()) {
+  bool useNativeDialog = Preferences::instance().experimental.useNativeFileDialog();
+#if LAF_IOS
+  // On iPad the system picker is the only way to access files outside
+  // the app folder (iCloud Drive, other apps, etc.)
+  useNativeDialog = true;
+#endif
+
+  if (useNativeDialog) {
     dlgs::FileDialog::Spec spec;
 
 #if LAF_MACOS
